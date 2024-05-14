@@ -1,0 +1,118 @@
+---
+title: "Lab Week4:Econ107"
+author: "Yifei Ding"
+date: "2024-04-23"
+output: html_document
+---
+1. Suppose we are examining two variables, TestScore and STR, where TestScore represents the student-teacher ratios (STR) and one represents test scores.
+```{=latex}
+\begin{array}{lrrrrrrr}
+\hline & 1 & 2 & 3 & 4 & 5 & 6 & 7 \\
+\hline \text { TestScore } & 680 & 640 & 670 & 660 & 630 & 660.0 & 635 \\
+\text { STR } & 15 & 17 & 19 & 20 & 22 & 23.5 & 25 \\
+\hline
+\end{array}
+```
+
+```{r}
+# Create sample data
+STR <- c(15, 17, 19, 20, 22, 23.5, 25)
+TestScore <- c(680, 640, 670, 660, 630, 660, 635)
+```
+
+```{r}
+#Q1. Report mean and variance for STR and TestScore
+mean(STR)
+mean(TestScore)
+var(STR)
+var(TestScore)
+```
+
+```{r}
+#Q2. Report covariance and correlation coefficient
+cov(STR, TestScore)
+cor(STR, TestScore)
+```
+
+```{r}
+#Q3. Report estimator b_0 and b_1
+linear_reg <- lm(TestScore~STR)
+summary(linear_reg)
+linear_reg$coefficients
+```
+2. How do we calculate the coefficient of determination, $R^{2}$ ?
+
+Having estimated a linear regression, you might wonder how well that regression line describes the data. Does the regressor account for much or for little of the variation in the dependent variable? Are the observations tightly clustered around the regression line, or are they spread out?
+
+2.1 The Total Sum of Squares (SST or TSS) is the sum over all squared differences between the observations and their overall mean $\bar{Y}$
+
+$$
+SST = \sum_{i=1}^{n}(Y_{i} - \bar{Y})^{2}
+$$
+
+
+```{r}
+SST = sum((TestScore - mean(TestScore))^2)
+SST
+```
+
+
+2.2 The sum of squares due to regression (SSR) or explained sum of squares (ESS) is the sum of the differences between the predicted value and the mean of the dependent variable.
+$$
+SSR = \sum_{i=1}^{n}(\hat{Y}_{i} - \bar{Y})^{2}
+$$
+```{r}
+SSR = sum((linear_reg$fitted.values - mean(TestScore))^2)
+SSR_al = sum((linear_reg$fitted.values - mean(linear_reg$fitted.values))^2)
+
+SSR
+SSR_al
+```
+
+2.3 The sum of squares error (SSE) or residual sum of squares (RSS) – where residual means remaining or unexplained – is the difference between the observed and predicted values.
+
+$$
+SSE = \sum_{i=1}^{n}(Y_{i} - \hat{Y}_{i})^{2} = \sum_{i=1}^{n}\hat{u}_{i}^{2}
+$$
+```{r}
+SSE = sum(linear_reg$residuals^{2})
+SSE
+```
+
+$$
+\sum_{i=1}^{n}(Y_{i} - \bar{Y})^{2} = \sum_{i=1}^{n}(\hat{Y}_{i} - \bar{Y})^{2}+ \sum_{i=1}^{n}(Y_{i} - \hat{Y}_{i})^{2}
+$$
+$$
+SST = SSR + SSE
+$$
+
+```{r}
+SSR + SSE
+SST
+```
+
+The coefficient of determination is
+$$
+R^{2} = \frac{SSR}{SST}
+$$
+```{r}
+SSR/SST
+```
+It's a measure that indicates the proportion of the variance in the dependent variable that is predictable from the independent variable(s). In simpler terms, it tells us how well the independent variable(s) explain the variation in the dependent variable.
+
+
+The relationship between coefficient of determination and correlation in simple regression model is
+$$
+R^{2} = r_{XY}^{2}
+$$
+```{r}
+cor(TestScore, STR)
+```
+
+
+```{r}
+#How t values are calculated
+-2.968/1.966
+713.568/40.258
+```
+

@@ -1,0 +1,58 @@
+---
+title: "02-SummaryStats"
+author: "Yifei Ding"
+date: "2024-04-09"
+output: html_document
+---
+```{r}
+Sys.setenv(lang = "en")
+```
+
+# Working With Data  {#sum}
+
+
+In this chapter we will first learn some basic concepts that help summarizing data. Then, we will tackle a real-world task and read, clean, and summarize data from the web.
+
+## Summary Statistics
+
+`R` has built in functions for a large number of summary statistics. For numeric variables, we can summarize data by looking at their center and spread, for example.
+
+```{r}
+# for the mpg dataset, we load:
+library(ggplot2)
+```
+
+```{r}
+head(mpg)
+```
+
+### Central Tendency {-}
+
+Suppose we want to know the *mean* and *median* of all the values stored in the `data.frame` column `mpg$cty`:
+
+| Measure | `R`               | Result              |
+|:---------:|:-------------------:|:---------------------:|
+| Mean    | `mean(mpg$cty)`   | `r mean(mpg$cty)`   |
+| Median  | `median(mpg$cty)` | `r median(mpg$cty)` |
+
+### Spread {-}
+
+How do the values in that column *vary*? How far *spread out* are they?
+
+| Measure            | `R`              | Result             |
+|:---------:|:-------------------:|:---------------------:|
+| Variance           | `var(mpg$cty)`   | `r var(mpg$cty)`   |
+| Standard Deviation | `sd(mpg$cty)`    | `r sd(mpg$cty)`    |
+| IQR                | `IQR(mpg$cty)`   | `r IQR(mpg$cty)`   |
+| Minimum            | `min(mpg$cty)`   | `r min(mpg$cty)`   |
+| Maximum            | `max(mpg$cty)`   | `r max(mpg$cty)`   |
+| Range              | `range(mpg$cty)` | `r range(mpg$cty)` |
+
+### Categorical {-}
+
+For categorical variables, counts and percentages can be used for summary.
+
+```{r}
+table(mpg$drv)
+table(mpg$drv) / nrow(mpg)
+```
