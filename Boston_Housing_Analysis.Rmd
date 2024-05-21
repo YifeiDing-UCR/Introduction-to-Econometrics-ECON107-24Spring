@@ -1,0 +1,170 @@
+
+---
+title: "Econometrics Project: Analysis of Boston Housing Data"
+author: "Yifei Ding"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: united
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(MASS) # Load MASS for the Boston dataset
+library(ggplot2) # Visualization
+library(dplyr) # Data manipulation
+library(kableExtra) # Enhanced tables
+```
+
+## Introduction
+
+This project conducts an econometric analysis of the Boston Housing dataset, available in the `MASS` library. This dataset contains data on various aspects of the housing market in the Boston area, and this analysis aims to identify factors influencing house prices using multiple linear regression techniques.
+
+## Data Section
+
+The Boston Housing dataset comprises 506 observations on 14 variables. The data is sourced from the `MASS` library which is a standard R package.
+
+```{r load-data}
+data(Boston, package = "MASS")
+summary(Boston)
+```
+
+## Descriptive Statistics Table
+
+The table below presents descriptive statistics for the Boston Housing dataset, providing a preliminary understanding of variable distributions.
+
+```{r descriptive-stats, warning=FALSE, results='asis'}
+Boston %>%
+  summary() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+## Model Specification
+
+We specify a multiple linear regression model considering the median value of owner-occupied homes (`medv`) as the dependent variable and the following as predictors:
+- `crim`: per capita crime rate by town
+- `zn`: proportion of residential land zoned for lots over 25,000 sq.ft.
+- `rm`: average number of rooms per dwelling
+
+```{r model-spec}
+model_formula <- medv ~ crim + zn + rm
+```
+
+## Empirical Results
+
+The regression model is estimated below. We also output a summary to view detailed regression output including coefficients, residuals, and other diagnostics.
+
+```{r regression-results}
+model <- lm(model_formula, data = Boston)
+summary(model)
+```
+
+## Presentation of Regression Results
+
+We present the regression results in a formatted table for clearer interpretation.
+
+```{r regression-table, echo=FALSE, warning=FALSE, results='asis'}
+library(stargazer)
+stargazer(model, type = "html", single.row = TRUE, header = FALSE, title = "Regression Results")
+```
+
+## Interpretation of the Estimated Coefficients
+
+- **crim**: The negative coefficient suggests that higher crime rates are associated with lower home values.
+- **zn**: This positive coefficient indicates that larger zoning areas positively impact home values.
+- **rm**: As expected, a greater number of rooms correlate with higher home values, reflecting that larger homes command higher prices.
+
+## Discussion of the Assumptions of Multiple Linear Regression Analysis
+
+We check the key assumptions of multiple linear regression, including linearity, homoscedasticity, normality of errors, and absence of multicollinearity.
+
+```{r assumptions}
+par(mfrow=c(2,2))
+plot(model)
+```
+
+### 1. Residuals vs Fitted Plot
+
+#### What it Shows:
+
+This plot is used to assess the assumption of linearity and homoscedasticity in your data.
+
+Linearity: The residuals should scatter randomly around the horizontal line at zero without any systematic patterns.
+
+Homoscedasticity: The spread of residuals should be consistent across all levels of fitted values.
+
+#### Observations:
+
+The plot shows a somewhat random dispersion of residuals around the horizontal line, which is a good sign of linearity.
+
+However, there seems to be a slight pattern where residuals are not evenly spread across the range of fitted values, hinting at potential heteroscedasticity.
+
+### 2. Normal Q-Q Plot
+
+#### What it Shows:
+
+This plot checks if the residuals are normally distributed—an assumption underlying the inference techniques (like t-tests) used in regression analysis.
+
+#### Observations:
+
+The points in this plot largely follow the theoretical line, suggesting that the residuals are approximately normally distributed.
+
+Some deviations at the ends of the plot suggest the presence of outliers or heavy tails in the distribution of residuals.
+
+### 3. Scale-Location Plot
+
+#### What it Shows:
+
+This plot is another way to check for homoscedasticity, showing if residuals are spread equally along the ranges of predictors.
+
+#### Observations:
+
+The plot reveals that the spread of residuals is not uniform across the range of fitted values, indicating potential issues with homoscedasticity.
+
+This uneven spread suggests that the variance of residuals is not constant, which can affect the reliability of standard errors and confidence intervals.
+
+### 4. Residuals vs Leverage Plot
+
+#### What it Shows:
+
+This plot helps identify influential observations that might unduly influence the regression line. It combines information on both residuals and leverage.
+
+#### Observations:
+
+Most data points have low leverage except for a few, which is typical in datasets.
+
+There are no points that combine both high leverage and large residuals, which suggests there are no particularly influential outliers significantly impacting the model fit.
+
+### Recommendations Based on Observations:
+
+Investigate Potential Heteroscedasticity: Consider transformations of the dependent variable or independent variables, such as logarithmic or square root transformations, to stabilize the variance across the data.
+
+Address Non-normality: Although not severe, consider robust regression methods if outliers or non-normality are concerns, especially if the analysis becomes more sensitive to these assumptions.
+
+Continue Monitoring Leverage Points: While no points are immediately problematic, it’s good practice to keep an eye on observations with higher leverage to ensure they do not affect conclusions if the model changes.
+
+### Additional Checks:
+Multicollinearity: We should examine if predictor variables are highly correlated, which can affect the model estimation.
+```{r message=FALSE, warning=FALSE}
+# Assuming the car package is installed
+library(car)
+vif(model)
+```
+
+### Independence of Errors: This assumption is crucial for hypothesis testing within regression models.
+
+```{r message=FALSE}
+library(lmtest)
+dwtest(model)
+```
+
+## Conclusion
+
+This analysis of the Boston Housing dataset utilized multiple linear regression to understand the impact of crime rates, zoning, and room numbers on housing prices. The results suggest significant effects of these variables on home values, with directions as hypothesized. Future studies could explore more complex models and additional variables such as accessibility to radial highways and pupil-teacher ratios by town.
+
+```{r session-info}
+sessionInfo()
+```

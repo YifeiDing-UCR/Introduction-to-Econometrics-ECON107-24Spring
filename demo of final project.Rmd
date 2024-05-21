@@ -1,0 +1,77 @@
+---
+title: "Econometrics Project: Analysis of Boston Housing Data"
+author: "Your Name"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: united
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(MASS) # Load MASS for the Boston dataset
+library(ggplot2) # Visualization
+library(dplyr) # Data manipulation
+library(kableExtra) # Enhanced tables
+```
+
+## Introduction
+This project conducts an econometric analysis of the Boston Housing dataset, available in the MASS library. This dataset contains data on various aspects of the housing market in the Boston area, and this analysis aims to identify factors influencing house prices using multiple linear regression techniques.
+
+Data Section
+The Boston Housing dataset comprises 506 observations on 14 variables. The data is sourced from the MASS library which is a standard R package.
+
+```{r}
+data(Boston, package = "MASS")
+summary(Boston)
+```
+
+Descriptive Statistics Table
+The table below presents descriptive statistics for the Boston Housing dataset, providing a preliminary understanding of variable distributions.
+```{r}
+Boston %>%
+  summary() %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+Model Specification
+We specify a multiple linear regression model considering the median value of owner-occupied homes (medv) as the dependent variable and the following as predictors:
+
+crim: per capita crime rate by town
+zn: proportion of residential land zoned for lots over 25,000 sq.ft.
+rm: average number of rooms per dwelling
+
+```{r}
+model_formula <- medv ~ crim + zn + rm
+```
+Empirical Results
+The regression model is estimated below. We also output a summary to view detailed regression output including coefficients, residuals, and other diagnostics.
+```{r}
+model <- lm(model_formula, data = Boston)
+summary(model)
+```
+
+Presentation of Regression Results
+We present the regression results in a formatted table for clearer interpretation.
+```{r}
+library(stargazer)
+stargazer(model, type = "html", single.row = TRUE, header = FALSE, title = "Regression Results")
+```
+
+Interpretation of the Estimated Coefficients
+crim: The negative coefficient suggests that higher crime rates are associated with lower home values.
+zn: This positive coefficient indicates that larger zoning areas positively impact home values.
+rm: As expected, a greater number of rooms correlate with higher home values, reflecting that larger homes command higher prices.
+
+Discussion of the Assumptions of Multiple Linear Regression Analysis
+We check the key assumptions of multiple linear regression, including linearity, homoscedasticity, normality of errors, and absence of multicollinearity.
+```{r}
+par(mfrow=c(2,2))
+plot(model)
+```
+
+Conclusion
+This analysis of the Boston Housing dataset utilized multiple linear regression to understand the impact of crime rates, zoning, and room numbers on housing prices. The results suggest significant effects of these variables on home values, with directions as hypothesized. Future studies could explore more complex models and additional variables such as accessibility to radial highways and pupil-teacher ratios by town.
